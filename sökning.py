@@ -38,7 +38,7 @@ def lin_search(songlist, key):  # Linjär sökning i listan
             return song  # Returnerar objektet som stämmer överens med key
         else:
             pass  # Om objektet inte stämmer överens med key hoppar vi över objektet
-    # print("lin failed")
+    print("lin failed")
     return None  # Om inget av objekten stämde överens med key när hela listan har gåtts igenom
 
 
@@ -57,7 +57,7 @@ def bin_search(songlist, key):  # Hämtat från Canvas med mindre modifikationer
             else:
                 low = middle + 1  # Om key är större än objektet, ändras low till höger om det testade elementet
 
-    # print("Bin failed!")
+    print("Bin failed!")
     return None  # Om hela listan har gåtts igenom och inget har hittats körs detta
 
 
@@ -66,13 +66,15 @@ def hash_search(songdic, key):  # Hämtat från Canvas med mindre modifikationer
         # print(key, "med låten", songdic[key])
         return songdic[key]  # Om key hittas i dictionaryt kommer objektet att returneras
     except KeyError:  # Om koden i try-satsen inte gick att köra
-        # print(key, "hittades inte")
+        print(key, "hittades inte")
         return None  # Returneras None, alltså finns inte key i songdic
 
 
 def main():
     songlist = read_file()  # Läser in filen och lägger den i en lista
     song_dic = {}  # Skapar en tom dictionary
+
+    songlist = songlist[:1000000]  # Slicear listan
 
     for song in songlist:  # Lägger in objekten från listan i dictionaryn
         song_dic[song.artistnamn] = song.title  # Lägger in objektens artistnamn som key och titeln som värde
@@ -82,6 +84,7 @@ def main():
 
     sista = songlist[n-1]  # Väljer det sista elementet i listan
     key = sista.artistnamn  # Väljer en key som är sista elementets artistnamn
+    print(key)
 
     lintime = timeit.timeit(stmt=lambda: lin_search(songlist, key), number=10000)  # Tar tiden för funktionen att köras
     print("Linjärsökningen tog", round(lintime, 4), "sekunder\n")
@@ -98,3 +101,39 @@ def main():
 
 
 main()
+
+"""
+Detta med sista elementets artist som nyckel och number = 10 000
+                         n = 250 000         n = 500 000        n = 1 000 000
+Linjär sökning            100,3216s            5,5544s          0,9102s
+Binär sökning               0,0709s            0,0661s          0,0603s
+Sökning i hashtabell        0,0024s            0,0023s          0,0022s
+
+Tidskomplexitet (i teorin):
+Linjär söknig   O(n)
+Binär sökning   O(log(n))
+Hashtabell      O(1)
+
+Jag skulle inte påstå att mina resultat helt sstämmer överens med teorin gällande den linjära eller den binära
+sökningen. Den binära sökniingen stämmer mer överens med den teoretiska tidskomplexiteten dock och kan ha påverkats
+av hur elementen låg i listan och datorns kapacitet att köra programmet, det sist nämnde påverkar även de andra
+sökfunktionerna.
+Den linjära sökningen har tydligt påverkats av hur elementen låg i listan då det vid 250 000 element tog längre tid
+att söka i listan än vid 1 000 000 element. Rimligtvis skulle sökningen i den längsta listan ta längst tid med
+linjärsökningen. Dock förekommer artister (vilket i denna kod är söknyckeln) flera gånger fast med olika låtar så vid
+den kortare listan kan en artist som först förekommer långt bak i listan vara vår söknyckel medan en artist som blir vår
+söknyckel vid de längre listorna förekommer tidigare i listan och dörför hitta ssnabbare.
+Sökningen i hashtabellen stämmer relativt bra överens med teorin då den tar ungefär lika lång tid vid varje sökning,
+detta då man endast gör en jämförelse mellan två nycklar.
+
+Den linjära söknignen kommer att ta längst tid då man i värsta fall kommer att gå igenom alla värden i listan i tur och
+ordning för att leta efter ett element som matchar nyckel. Alltså kommer det att i värsta fall behöva genomföras N antal
+jämförelser. Detta ger O(n) vid stora tal n.
+
+Den binära sökningen kommer att ta näst längst tid då den för varje jämförelse den gör i en sorterad lista kommer att
+halvera antalet element i listan som eventuellt kommer behöva jämföras med nyckeln. Detta gör att tidskomplexiteten för
+binärsökningen kommer att bli O(log(n)) (i bas 2) för stora tal n.
+
+Sökningen i hashtabell kommer att vara den snabbaste söknings-funktionen då man endast gör en jämförelse mellan sin
+nyckel och om det finns en nyckel som stämmer överens med den i hashtabellen. Detta gör att tidskomplexiteten blir O(1).
+"""

@@ -78,11 +78,11 @@ def slowsort(songlist):  # Hämtat från Canvas
     n = len(songlist)  # Räknar ut längden av listan
     bytt = True
     while bytt:
-        bytt = False
-        for i in range(n-1):
-            if songlist[i] > songlist[i+1]:
-                songlist[i], songlist[i+1] = songlist[i+1], songlist[i]
-                bytt = True
+        bytt = False  # Bytt ändras till False, går programmet inte in i for-loopen bryts while-loopen
+        for i in range(n-1):  # Range 0 < n-1 (från lägsta index i listan till högsta index i listan)
+            if songlist[i] > songlist[i+1]:  # Om elemenetet på index i är större än elementet på index i+1
+                songlist[i], songlist[i+1] = songlist[i+1], songlist[i]  # Byter dessa två plats
+                bytt = True  # Bytt ändras till True vilket gör att loopen körs igen eftersom ett byte har skett
 
 
 def main():
@@ -100,9 +100,9 @@ def main():
 
     print("Antal element =", n, "\n")
 
-    #print("Påbörjar den snabba sorteringen av listan...")
-    #fastsorttime = timeit.timeit(stmt=lambda: quicksort(songlist1), number=times_run)
-    #print("Fastsort tog i snitt", round((fastsorttime/times_run), 4)/times_run, "sekunder\n")
+    print("Påbörjar den snabba sorteringen av listan...")
+    fastsorttime = timeit.timeit(stmt=lambda: quicksort(songlist1), number=times_run)
+    print("Fastsort tog i snitt", round((fastsorttime/times_run), 4)/times_run, "sekunder\n")
 
     print("Påbörjar den långsamma sorteringen av listan...")
     slowsorttime = timeit.timeit(stmt=lambda: slowsort(songlist2), number=times_run)
@@ -114,7 +114,27 @@ main()
 """
 Dessa tider avser en körning
 
-Tider      n = 1 000       n = 10 000        n = 100 000       n = 1 000 000
-Snabb:      0,0053s          0,074s            1,1502s              14,8892s
-långsam:    0,5301s         54,0085s           
+               n = 1 000       n = 10 000        n = 100 000       n = 1 000 000
+Snabb:          0,0053s          0,074s            1,1502s            14,8892s
+Långsam:        0,5301s         54,0085s           45min <                  -
+
+Den snabba sorteringen har i O(n*log(n)) (man kan dela listan i log(n) gånger)
+Den långsamma sorteringen har i värsta fall O(n^2) ( n*((n-1)/2) jämförelser och byten)
+
+Båda sorterings-funktionerna anser jag följer den teoretiska tidsökningen bra, dock hade jag inte möjlighet att köra den
+långsamma metoden fullt ut för varken 10 000 eller 1 000 000 element då det tog för lång tid. Det kan bero på datorn men
+jag vill även påstå att det beror på själva metoden.
+
+Den snabba sorteringsfunktionen, quicksort gör så att den sorterar alla element efter pivot (i denna kodning det
+elementet som ligger i mitten av listan. När den har gjort det en gång så delar den listan i hälften och kör sedan om
+samma procedur på den vänstra "mindre värda" sidan och upprepar sedan delningen och sorteringen tills att hela den
+vänstra sidan är färdigsorterad. Därefter sorterar den högra sidan om pivot osv tills hela listan är sorterad. På grund 
+av att listan konstant delas upp i mindre listor på hälften så liknar det binärsökning. Jämförelserna och uppdelningen
+av längden på listan gör att denna funktion får tidskomplexiteten O(n*log(n))
+
+Dem långsamma sorteringsfunktionen gör så att man konstant jämför ett värde och det värdet som kommer efter det. Om det
+nästkommande värdet är mindre så byter värdena plats. Stämemr värdena, att det mindre värdet med lägre index är till
+vänster om det större värdet som är till höger så hoppar funktionen vidare ett steg och jämför det större värdet med
+värdet på det index som kommer efter osv. När man går igenom alla värden i loopen utan att göra några byten så är
+sorteringen klar. Detta gör att tidskomplexiteten blir O(n^2).
 """
